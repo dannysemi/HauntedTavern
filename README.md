@@ -1,0 +1,2 @@
+# HauntedTavern
+Hackable SillyTavern alternative
