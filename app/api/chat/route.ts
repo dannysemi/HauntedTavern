@@ -1,42 +1,7 @@
-import { CoreMessage } from 'ai';
-import { MessagesService,
-  ChatService,
-  SystemService,
-  CharacterService,
-  type SystemMessage,
-  type ProcessedMessages,
-  type LLMResponse } from '@/lib/plugins';
+import { type CoreMessage } from 'ai';
+import { processPipeline } from '@root/tavern/pipeline';
 
 export async function POST(req: Request) {
-  const { messages: userMessages }: { messages: CoreMessage[] } = await req.json();
-  let systemMessage: SystemMessage = SystemService.processSystem();
-  systemMessage = CharacterService.processCharacter(systemMessage.systemMessage);
-  const processedMessages: ProcessedMessages = MessagesService.processMessages(userMessages);
-  try {
-    //const result: LLMResponse = await ChatService.processChat(processedMessages.messages, systemMessage.systemMessage);
-    const result = await ChatService.processChat(processedMessages.messages, systemMessage.systemMessage);
-
-    /*const response = {
-      id: Date.now().toString(),
-      ...result.assistantMessage,
-      ...(process.env.NODE_ENV === 'development' ? {
-        _debug: {
-          ...result.debug,
-          processedMessages,
-          systemMessage
-        }
-      } : {})
-    };
-
-    return Response.json(response);*/
-    return result.toDataStreamResponse();
-
-  } catch (error) {
-    console.error('Error processing chat request:', error);
-    return Response.json(
-      { error: 'Failed to process request' },
-      { status: 500 }
-    );
-  }
+  const { messages }: { messages: CoreMessage[] } = await req.json();
+  return processPipeline(messages);
 }
-
