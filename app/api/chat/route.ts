@@ -13,10 +13,12 @@ export async function POST(req: Request) {
   systemMessage = CharacterService.processCharacter(systemMessage.systemMessage);
   const processedMessages: ProcessedMessages = MessagesService.processMessages(userMessages);
   try {
-    const result: LLMResponse = await ChatService.processChat(processedMessages.messages, systemMessage.systemMessage);
-    
-    const response = {
-      messages: [result.assistantMessage],
+    //const result: LLMResponse = await ChatService.processChat(processedMessages.messages, systemMessage.systemMessage);
+    const result = await ChatService.processChat(processedMessages.messages, systemMessage.systemMessage);
+
+    /*const response = {
+      id: Date.now().toString(),
+      ...result.assistantMessage,
       ...(process.env.NODE_ENV === 'development' ? {
         _debug: {
           ...result.debug,
@@ -26,7 +28,8 @@ export async function POST(req: Request) {
       } : {})
     };
 
-    return Response.json(response);
+    return Response.json(response);*/
+    return result.toDataStreamResponse();
 
   } catch (error) {
     console.error('Error processing chat request:', error);
@@ -36,3 +39,4 @@ export async function POST(req: Request) {
     );
   }
 }
+
