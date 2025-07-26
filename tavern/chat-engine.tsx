@@ -1,9 +1,16 @@
 'use client';
 import { useChat } from 'ai/react';
 import { useState, useRef } from 'react';
+import { useLLMParams, type LLMParams } from './curios/llm-params-menu';
 
 export function useChatEngine() {
-  const chat = useChat({ api: '/api/chat' });
+  const { params: llmParams, isOpen, toggleMenu } = useLLMParams();
+  const chat = useChat({
+    api: '/api/chat',
+    body: {
+      llmParams // Pass params directly to API calls
+    }
+  });
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editContent, setEditContent] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -28,6 +35,9 @@ export function useChatEngine() {
 
   return {
     ...chat,
+    llmParams,
+    isParamsMenuOpen: isOpen,
+    toggleParamsMenu: toggleMenu,
     editingId,
     editContent,
     messagesEndRef,

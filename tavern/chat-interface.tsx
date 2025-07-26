@@ -2,8 +2,9 @@
 import { useChatEngine } from './chat-engine';
 import { Message } from 'ai/react';
 import ReactMarkdown, { type Components } from 'react-markdown';
-import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
-import { markdownComponents, parseContent } from './markdown-utils';
+import { PencilSquareIcon, TrashIcon, Cog6ToothIcon } from '@heroicons/react/24/outline';
+import { markdownComponents, parseContent } from './curios/markdown-utils';
+import { LLMParamsMenu } from './curios/llm-params-menu';
 
 export function ChatInterface() {
   const {
@@ -17,7 +18,10 @@ export function ChatInterface() {
     messagesEndRef,
     handleSaveEdit,
     handleDeleteMessage,
-    handleStartEdit
+    handleStartEdit,
+    llmParams,
+    isParamsMenuOpen,
+    toggleParamsMenu
   } = useChatEngine();
 
   const userName = process.env.NEXT_PUBLIC_USER_NAME || "Traveler";
@@ -25,11 +29,21 @@ export function ChatInterface() {
 
   return (
     <div className="flex flex-col h-screen max-w-4xl mx-auto bg-[#221818]">
-      <header className="sticky top-0 z-10 p-4 border-b border-[#5c2d2d] bg-[#2a1414]">
+      <header className="sticky top-0 z-10 p-4 border-b border-[#5c2d2d] bg-[#2a1414] flex justify-between items-center">
         <h1 className="text-xl font-medium text-[#e8c8a0] font-serif tracking-wider">
           Haunted Tavern
         </h1>
+        <button onClick={toggleParamsMenu} className="p-1 text-[#d4a76a] hover:text-[#e8c8a0]">
+          <Cog6ToothIcon className="h-6 w-6" />
+        </button>
       </header>
+
+      <LLMParamsMenu
+        params={llmParams}
+        onParamsChange={(newParams) => {}}
+        isOpen={isParamsMenuOpen}
+        onClose={toggleParamsMenu}
+      />
 
       <div className="flex-1 overflow-y-auto px-4 pb-4 min-h-0">
         <div className="space-y-6 pt-4">
@@ -99,8 +113,8 @@ export function ChatInterface() {
                         className="p-1 text-[#c49c6b] opacity-0 group-hover:opacity-100"
                       >
                         <TrashIcon className="h-4 w-4" />
-          </button>
-        </div>
+                      </button>
+                    </div>
                   </>
                 )}
     </div>
@@ -115,8 +129,8 @@ export function ChatInterface() {
           <div className="text-sm text-[#c49c6b] font-serif italic">
             <div className="inline-block bg-[#3a2020] px-3 py-2 rounded-lg">
               {assistantName} is pondering...
-        </div>
-    </div>
+            </div>
+          </div>
         </div>
       )}
 
